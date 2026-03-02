@@ -3,8 +3,9 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts'
 import { Plus, TrendingDown, TrendingUp, Wallet } from 'lucide-react'
 import { useStore } from '../store/useStore'
 import { formatCurrency, convertFromEUR } from '../utils/currency'
-import { isInMonth, getMonthLabel, prevMonth } from '../utils/dates'
+import { isInMonth, prevMonth } from '../utils/dates'
 import MonthNavigator from '../components/MonthNavigator'
+import CalendarView from '../components/CalendarView'
 
 export default function Dashboard({ onAddExpense }) {
   const expenses = useStore((s) => s.expenses)
@@ -16,7 +17,6 @@ export default function Dashboard({ onAddExpense }) {
 
   const convert = (eur) => convertFromEUR(eur, defaultCurrency, exchangeRates)
 
-  // Current month data
   const monthExpenses = useMemo(
     () => expenses.filter((e) => isInMonth(e.date, activeMonth)),
     [expenses, activeMonth]
@@ -63,14 +63,13 @@ export default function Dashboard({ onAddExpense }) {
       .sort((a, b) => b.total - a.total)
   }, [monthExpenses, categories])
 
-  // Recent expenses (last 5)
-  const recentExpenses = monthExpenses.slice(0, 5)
+  const hasData = monthExpenses.length > 0 || monthIncomes.length > 0
 
   return (
     <div className="pt-safe pb-24 px-4 space-y-4 min-h-dvh">
       {/* Header */}
       <div className="pt-4 pb-2">
-        <div className="flex items-center justify-between mb-1">
+        <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-xl bg-accent flex items-center justify-center">
               <Wallet className="w-4 h-4 text-white" />
@@ -88,64 +87,75 @@ export default function Dashboard({ onAddExpense }) {
         <MonthNavigator />
       </div>
 
-      {/* Balance Card */}
+      {/* ── BALANCE PRINCIPAL ── */}
       <div className="bg-gradient-to-br from-accent/20 to-accent/5 border border-accent/20 rounded-3xl p-5">
-        <p className="text-text-muted text-xs font-medium mb-1">Balance disponible</p>
-        <p className={`text-4xl font-bold tracking-tight mb-4 ${balance >= 0 ? 'text-text-primary' : 'text-danger'}`}>
+        {/* Disponible — número grande y destacado */}
+        <p className="text-text-muted text-xs font-medium mb-0.5">Disponible para gastar</p>
+        <p className={`text-5xl font-black tracking-tight mb-1 ${balance >= 0 ? 'text-text-primary' : 'text-danger'}`}>
           {formatCurrency(convert(balance), defaultCurrency)}
         </p>
+        {totalIncome === 0 && (
+          <p className="text-xs text-text-muted mb-3">Agregá ingresos para ver tu balance</p>
+        )}
 
-        {/* Progress bar */}
-        <div className="space-y-1.5">
-          <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-            <div
-              className={`h-full rounded-full transition-all duration-500 ${
-                spentPct > 85 ? 'bg-danger' : spentPct > 60 ? 'bg-warning' : 'bg-accent'
-              }`}
-              style={{ width: `${spentPct}%` }}
-            />
-          </div>
-          <div className="flex justify-between text-xs text-text-muted">
-            <span>Gastado {spentPct.toFixed(0)}%</span>
-            <span>{formatCurrency(convert(totalExpenses), defaultCurrency)} de {formatCurrency(convert(totalIncome), defaultCurrency)}</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Stats Row */}
-      <div className="grid grid-cols-2 gap-3">
-        <div className="bg-bg-card rounded-2xl p-4">
-          <div className="flex items-center gap-2 mb-2">
-            <div className="w-7 h-7 rounded-lg bg-success/10 flex items-center justify-center">
-              <TrendingUp className="w-3.5 h-3.5 text-success" />
+        {/* Barra de progreso */}
+        {totalIncome > 0 && (
+          <div className="mb-3">
+            <div className="h-2.5 bg-white/10 rounded-full overflow-hidden">
+              <div
+                className={`h-full rounded-full transition-all duration-500 ${
+                  spentPct > 85 ? 'bg-danger' : spentPct > 60 ? 'bg-warning' : 'bg-accent'
+                }`}
+                style={{ width: `${spentPct}%` }}
+              />
             </div>
-            <span className="text-xs text-text-muted">Ingresos</span>
-          </div>
-          <p className="text-xl font-bold">{formatCurrency(convert(totalIncome), defaultCurrency)}</p>
-        </div>
-
-        <div className="bg-bg-card rounded-2xl p-4">
-          <div className="flex items-center gap-2 mb-2">
-            <div className="w-7 h-7 rounded-lg bg-danger/10 flex items-center justify-center">
-              <TrendingDown className="w-3.5 h-3.5 text-danger" />
-            </div>
-            <span className="text-xs text-text-muted">Gastos</span>
-          </div>
-          <p className="text-xl font-bold">{formatCurrency(convert(totalExpenses), defaultCurrency)}</p>
-          {expenseDiff !== null && (
-            <p className={`text-xs mt-0.5 ${expenseDiff > 0 ? 'text-danger' : 'text-success'}`}>
-              {expenseDiff > 0 ? '+' : ''}{expenseDiff.toFixed(1)}% vs mes ant.
+            <p className="text-[11px] text-text-muted mt-1">
+              Gastaste el {spentPct.toFixed(0)}% de tus ingresos este mes
             </p>
-          )}
+          </div>
+        )}
+
+        {/* Ingresos / Gastos en fila */}
+        <div className="grid grid-cols-2 gap-3 mt-3">
+          <div className="bg-white/5 rounded-2xl px-3 py-2.5">
+            <div className="flex items-center gap-1.5 mb-1">
+              <TrendingUp className="w-3.5 h-3.5 text-success" />
+              <span className="text-[11px] text-text-muted">Ingresos</span>
+            </div>
+            <p className="text-base font-bold text-success">
+              +{formatCurrency(convert(totalIncome), defaultCurrency)}
+            </p>
+          </div>
+          <div className="bg-white/5 rounded-2xl px-3 py-2.5">
+            <div className="flex items-center gap-1.5 mb-1">
+              <TrendingDown className="w-3.5 h-3.5 text-danger" />
+              <span className="text-[11px] text-text-muted">Gastos</span>
+            </div>
+            <p className="text-base font-bold text-danger">
+              -{formatCurrency(convert(totalExpenses), defaultCurrency)}
+            </p>
+            {expenseDiff !== null && (
+              <p className={`text-[10px] mt-0.5 ${expenseDiff > 0 ? 'text-danger' : 'text-success'}`}>
+                {expenseDiff > 0 ? '▲' : '▼'} {Math.abs(expenseDiff).toFixed(1)}% vs mes ant.
+              </p>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* Category Breakdown */}
+      {/* ── CALENDARIO ── */}
+      {hasData && (
+        <div className="bg-bg-card rounded-3xl p-4">
+          <h3 className="text-sm font-semibold mb-4">Gastos por día</h3>
+          <CalendarView expenses={monthExpenses} />
+        </div>
+      )}
+
+      {/* ── GRÁFICO POR CATEGORÍA ── */}
       {categoryData.length > 0 && (
         <div className="bg-bg-card rounded-3xl p-4">
           <h3 className="text-sm font-semibold mb-4">Por categoría</h3>
           <div className="flex items-center gap-4">
-            {/* Pie Chart */}
             <div className="w-32 h-32 shrink-0">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
@@ -176,8 +186,6 @@ export default function Dashboard({ onAddExpense }) {
                 </PieChart>
               </ResponsiveContainer>
             </div>
-
-            {/* Legend */}
             <div className="flex-1 space-y-2 overflow-hidden">
               {categoryData.slice(0, 5).map((cat) => {
                 const pct = totalExpenses > 0 ? (cat.total / totalExpenses) * 100 : 0
@@ -194,41 +202,8 @@ export default function Dashboard({ onAddExpense }) {
         </div>
       )}
 
-      {/* Recent expenses */}
-      {recentExpenses.length > 0 && (
-        <div>
-          <h3 className="text-sm font-semibold mb-3 px-1">Últimos gastos</h3>
-          <div className="space-y-2">
-            {recentExpenses.map((expense) => {
-              const cat = categories.find((c) => c.id === expense.categoryId)
-              return (
-                <div key={expense.id} className="bg-bg-card rounded-2xl px-4 py-3 flex items-center gap-3">
-                  <div
-                    className="w-10 h-10 rounded-xl flex items-center justify-center text-lg shrink-0"
-                    style={{ background: `${cat?.color || '#71717A'}20` }}
-                  >
-                    {cat?.icon || '📦'}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate">
-                      {expense.description || cat?.name || 'Gasto'}
-                    </p>
-                    <p className="text-xs text-text-muted">
-                      {new Date(expense.date).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })}
-                    </p>
-                  </div>
-                  <p className="text-sm font-semibold text-danger shrink-0">
-                    -{formatCurrency(convert(expense.amountEUR), defaultCurrency)}
-                  </p>
-                </div>
-              )
-            })}
-          </div>
-        </div>
-      )}
-
       {/* Empty state */}
-      {monthExpenses.length === 0 && monthIncomes.length === 0 && (
+      {!hasData && (
         <div className="flex flex-col items-center justify-center py-12 text-center">
           <div className="text-5xl mb-4">💸</div>
           <p className="text-text-secondary font-medium mb-1">Sin movimientos</p>

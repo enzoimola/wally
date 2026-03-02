@@ -21,11 +21,23 @@ export default function AddExpenseSheet({ onClose, initialData = null }) {
 
   const selectedCategory = categories.find((c) => c.id === categoryId)
 
+  function parseAmount(raw) {
+    // Accept both dot and comma as decimal separator
+    return parseFloat(raw.replace(',', '.'))
+  }
+
+  function handleAmountChange(e) {
+    // Allow digits, single dot or comma, no multiple separators
+    const val = e.target.value
+    if (/^[0-9]*[.,]?[0-9]*$/.test(val)) setAmount(val)
+  }
+
   function handleSubmit(e) {
     e.preventDefault()
-    if (!amount || isNaN(parseFloat(amount))) return
+    const parsed = parseAmount(amount)
+    if (!amount || isNaN(parsed)) return
 
-    const originalAmount = parseFloat(amount)
+    const originalAmount = parsed
     const amountEUR = convertToEUR(originalAmount, currency, exchangeRates)
 
     const payload = {
@@ -81,13 +93,11 @@ export default function AddExpenseSheet({ onClose, initialData = null }) {
                 <ChevronDown className="w-3 h-3 text-text-muted" />
               </button>
               <input
-                type="number"
+                type="text"
                 inputMode="decimal"
-                step="0.01"
-                min="0"
                 value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                placeholder="0.00"
+                onChange={handleAmountChange}
+                placeholder="0,00"
                 autoFocus
                 className="flex-1 bg-transparent text-3xl font-bold text-text-primary placeholder-text-muted outline-none w-full"
               />

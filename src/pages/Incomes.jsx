@@ -19,10 +19,16 @@ function IncomeSheet({ onClose, initial = null }) {
     initial?.date?.slice(0, 10) || `${activeMonth}-01`
   )
 
+  function handleAmountChange(e) {
+    const val = e.target.value
+    if (/^[0-9]*[.,]?[0-9]*$/.test(val)) setAmount(val)
+  }
+
   function handleSubmit(e) {
     e.preventDefault()
-    if (!amount || isNaN(parseFloat(amount))) return
-    const originalAmount = parseFloat(amount)
+    const parsed = parseFloat(amount.replace(',', '.'))
+    if (!amount || isNaN(parsed)) return
+    const originalAmount = parsed
     const amountEUR = convertToEUR(originalAmount, currency, exchangeRates)
     const payload = {
       originalAmount,
@@ -68,13 +74,11 @@ function IncomeSheet({ onClose, initial = null }) {
                 ))}
               </select>
               <input
-                type="number"
+                type="text"
                 inputMode="decimal"
-                step="0.01"
-                min="0"
                 value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                placeholder="0.00"
+                onChange={handleAmountChange}
+                placeholder="0,00"
                 autoFocus
                 className="flex-1 bg-transparent text-3xl font-bold text-success placeholder-text-muted outline-none"
               />
