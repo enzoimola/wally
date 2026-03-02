@@ -5,7 +5,6 @@ import { useStore } from '../store/useStore'
 import { formatCurrency, convertFromEUR } from '../utils/currency'
 import { isInMonth, prevMonth } from '../utils/dates'
 import MonthNavigator from '../components/MonthNavigator'
-import CalendarView from '../components/CalendarView'
 
 export default function Dashboard({ onAddExpense }) {
   const expenses = useStore((s) => s.expenses)
@@ -142,14 +141,6 @@ export default function Dashboard({ onAddExpense }) {
           </div>
         </div>
       </div>
-
-      {/* ── CALENDARIO ── */}
-      {hasData && (
-        <div className="bg-bg-card rounded-3xl p-4">
-          <h3 className="text-sm font-semibold mb-4">Gastos por día</h3>
-          <CalendarView expenses={monthExpenses} />
-        </div>
-      )}
 
       {/* ── GRÁFICO POR CATEGORÍA ── */}
       {categoryData.length > 0 && (

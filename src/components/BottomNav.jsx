@@ -1,11 +1,11 @@
-import { LayoutDashboard, List, TrendingUp, Settings, Plus } from 'lucide-react'
+import { LayoutDashboard, List, TrendingUp, Calendar, Plus } from 'lucide-react'
 
 const TABS = [
   { id: 'dashboard', icon: LayoutDashboard, label: 'Inicio' },
   { id: 'expenses', icon: List, label: 'Gastos' },
   { id: 'ADD', icon: Plus, label: '' },
   { id: 'incomes', icon: TrendingUp, label: 'Ingresos' },
-  { id: 'settings', icon: Settings, label: 'Ajustes' },
+  { id: 'calendar', icon: Calendar, label: 'Calendario' },
 ]
 
 export default function BottomNav({ current, onChange, onAdd }) {
