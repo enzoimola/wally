@@ -1,34 +1,16 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <!-- Background -->
-  <rect width="512" height="512" rx="114" fill="url(#bg)"/>
+  <!-- Background negro -->
+  <rect width="512" height="512" rx="114" fill="#000000"/>
 
-  <!-- Wallet body -->
-  <rect x="96" y="160" width="320" height="220" rx="28" fill="white" opacity="0.15"/>
-  <rect x="96" y="160" width="320" height="60" rx="28" fill="white" opacity="0.25"/>
-  <rect x="96" y="196" width="320" height="24" fill="white" opacity="0.25"/>
-
-  <!-- Coin slot -->
-  <rect x="336" y="230" width="80" height="72" rx="20" fill="url(#slot)"/>
-  <circle cx="376" cy="266" r="18" fill="white" opacity="0.5"/>
-
-  <!-- W letter -->
-  <text x="256" y="310" text-anchor="middle" font-family="-apple-system, SF Pro Display, Helvetica Neue, sans-serif"
-        font-weight="800" font-size="108" fill="white" opacity="0.0">W</text>
-
-  <!-- Clean W shape (paths) -->
-  <path d="M148 200 L188 340 L228 250 L268 340 L308 200 L288 200 L256 305 L224 200 Z"
-        fill="white" opacity="0.95"/>
-  <path d="M228 250 L268 340 L308 200 L288 200 L268 305 Z"
-        fill="white" opacity="0.95"/>
-
-  <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#7C74FF"/>
-      <stop offset="100%" stop-color="#4338CA"/>
-    </linearGradient>
-    <linearGradient id="slot" x1="0" y1="0" x2="0" y2="1" gradientUnits="objectBoundingBox">
-      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.2"/>
-      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.05"/>
-    </linearGradient>
-  </defs>
+  <!-- W blanca -->
+  <text
+    x="256"
+    y="340"
+    text-anchor="middle"
+    font-family="Helvetica Neue, Arial, sans-serif"
+    font-weight="900"
+    font-size="300"
+    fill="#FFFFFF"
+    letter-spacing="-10"
+  >W</text>
 </svg>
