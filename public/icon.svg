@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <!-- Background negro -->
-  <rect width="512" height="512" rx="114" fill="#000000"/>
+  <!-- Background negro, sin redondeo — iOS aplica el suyo -->
+  <rect width="512" height="512" fill="#000000"/>
 
   <!-- W blanca -->
   <text
